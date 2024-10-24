@@ -10,7 +10,7 @@ public static class Program
     public static int Main(string[] args)
     {
         var chip8 = new Chip8();
-        chip8.LoadRom(@"C:\Users\dmitr\Downloads\Chip8 Picture.ch8");
+        chip8.LoadRom(@"C:\Users\dmitr\Downloads\test_opcode.ch8");
 
         var cycleDelay = 16.0 / 1_000;
         var lastCycleTime = Time.GetTime();
