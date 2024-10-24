@@ -14,4 +14,10 @@
       <PackageReference Include="Raylib-CSharp" Version="4.1.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\500.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Raylib_CSharp;
+using Raylib_CSharp.Audio;
 using Raylib_CSharp.Colors;
 using Raylib_CSharp.Rendering;
 using Raylib_CSharp.Windowing;
@@ -14,12 +15,20 @@ public static class Program
 
         var cycleDelay = 16.0 / 1_000;
         var lastCycleTime = Time.GetTime();
-
+        
+        AudioDevice.Init();
         Window.Init(640, 320, "CHIP-8 Emulator");
         Time.SetTargetFPS(60);
+        
+        var beepSound = Sound.Load("./Resources/500.wav");
 
         while (!Window.ShouldClose())
         {
+            if (chip8.SoundTimer > 0)
+                beepSound.Play();
+            else
+                beepSound.Pause();
+
             var currentTime = Time.GetTime();
             var dt = currentTime - lastCycleTime;
 
@@ -43,6 +52,8 @@ public static class Program
         }
 
         Window.Close();
+        AudioDevice.Close();
+        beepSound.Unload();
 
         return 0;
     }
