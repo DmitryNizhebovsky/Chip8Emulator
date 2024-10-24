@@ -449,7 +449,8 @@ public sealed class Chip8
     /// </summary>
     private void Op_FX29(ushort instruction)
     {
-        throw new NotImplementedException();
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        _indexRegister = (ushort)(FontSetAddress + vx * 5);
     }
     
     /// <summary>
