@@ -39,14 +39,32 @@ public sealed class Chip8
 
     public Chip8()
     {
-        // Load fonts into memory
-        Array.Copy(_fontSet, 0, _memory, FontSetAddress, _fontSet.Length);
+        LoadFont();
     }
 
     public void LoadRom(string pathToRom)
     {
         var romData = File.ReadAllBytes(pathToRom);
         Array.Copy(romData, 0, _memory, StartAddress, romData.Length);
+    }
+
+    public void Reset()
+    {
+        Array.Clear(Display);
+        Array.Clear(Keypad);
+        Array.Clear(_memory);
+        Array.Clear(_registers);
+        LoadFont();
+        _programCounter = StartAddress;
+        _indexRegister = 0;
+        _delayTimer = 0;
+        SoundTimer = 0;
+        _stack.Clear();
+    }
+
+    private void LoadFont()
+    {
+        Array.Copy(_fontSet, 0, _memory, FontSetAddress, _fontSet.Length);
     }
 
     public void Cycle()
@@ -101,6 +119,24 @@ public sealed class Chip8
             case 0xB: Op_BNNN(instruction); break;
             case 0xC: Op_CXNN(instruction); break;
             case 0xD: Op_DXYN(instruction); break;
+            case 0xE:
+            {
+                if (thirdNibble == 0x9)
+                {
+                    switch (fourthNibble)
+                    {
+                        case 0xE: Op_EX9E(instruction); break;
+                    }
+                }
+                else if (thirdNibble == 0xA)
+                {
+                    switch (fourthNibble)
+                    {
+                        case 0x1: Op_EXA1(instruction); break;
+                    }
+                }
+            }
+                break;
             case 0xF:
             {
                 if (thirdNibble == 0x0)
@@ -150,6 +186,7 @@ public sealed class Chip8
                 }
             }
                 break;
+            default: throw new NotImplementedException($"Unknown instruction {instruction:x4}");
         }
     }
 
@@ -400,6 +437,30 @@ public sealed class Chip8
     }
 
     /// <summary>
+    /// SKIP;Vx EQ KEY
+    /// </summary>
+    public void Op_EX9E(ushort instruction)
+    {
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var x = _registers[vx];
+
+        if (Keypad[x])
+            _programCounter += 2;
+    }
+    
+    /// <summary>
+    /// SKIP;Vx NE KEY
+    /// </summary>
+    public void Op_EXA1(ushort instruction)
+    {
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var x = _registers[vx];
+
+        if (!Keypad[x])
+            _programCounter += 2;
+    }
+
+    /// <summary>
     /// Sets VX to the current value of the delay timer
     /// </summary>
     private void Op_FX07(ushort instruction)
@@ -413,7 +474,41 @@ public sealed class Chip8
     /// </summary>
     private void Op_FX0A(ushort instruction)
     {
-        throw new NotImplementedException();
+        var vx = (byte)((instruction >> 8) & 0x0F);
+
+        if (Keypad[0])
+            _registers[vx] = 0;
+        else if (Keypad[1])
+            _registers[vx] = 1;
+        else if (Keypad[2])
+            _registers[vx] = 2;
+        else if (Keypad[3])
+            _registers[vx] = 3;
+        else if (Keypad[4])
+            _registers[vx] = 4;
+        else if (Keypad[5])
+            _registers[vx] = 5;
+        else if (Keypad[6])
+            _registers[vx] = 6;
+        else if (Keypad[7])
+            _registers[vx] = 7;
+        else if (Keypad[8])
+            _registers[vx] = 8;
+        else if (Keypad[9])
+            _registers[vx] = 9;
+        else if (Keypad[10])
+            _registers[vx] = 10;
+        else if (Keypad[11])
+            _registers[vx] = 11;
+        else if (Keypad[12])
+            _registers[vx] = 12;
+        else if (Keypad[13])
+            _registers[vx] = 13;
+        else if (Keypad[14])
+            _registers[vx] = 14;
+        else if (Keypad[15])
+            _registers[vx] = 15;
+        else _programCounter -= 2;
     }
     
     /// <summary>
