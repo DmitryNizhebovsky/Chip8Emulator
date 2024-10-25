@@ -35,6 +35,11 @@ public sealed class Emulator
                 _chip8.Reset();
                 _chip8.LoadRom(options.RomPath);
             }
+
+            if (Input.IsKeyPressed(KeyboardKey.Escape))
+            {
+                Window.Close();
+            }
             
             PlaySound(beepSound);
 
