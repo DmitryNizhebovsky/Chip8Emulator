@@ -12,6 +12,7 @@ public sealed class Chip8
     private ushort _programCounter = StartAddress;
     private ushort _indexRegister;
     public readonly bool[] Display = new bool[DisplayWidth * DisplayHeight];
+    public readonly bool[] Keypad = new bool[16];
     private readonly byte[] _memory = new byte[4096];
     private readonly byte[] _registers = new byte[16];
     private readonly Stack<ushort> _stack = new(16);
@@ -38,9 +39,6 @@ public sealed class Chip8
 
     public Chip8()
     {
-        // Clear the display
-        Array.Clear(Display, 0, Display.Length);
-        
         // Load fonts into memory
         Array.Copy(_fontSet, 0, _memory, FontSetAddress, _fontSet.Length);
     }
@@ -450,7 +448,8 @@ public sealed class Chip8
     private void Op_FX29(ushort instruction)
     {
         var vx = (byte)((instruction >> 8) & 0x0F);
-        _indexRegister = (ushort)(FontSetAddress + vx * 5);
+        var digit = _registers[vx];
+        _indexRegister = (ushort)(FontSetAddress + digit * 5);
     }
     
     /// <summary>
