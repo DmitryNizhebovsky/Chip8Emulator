@@ -229,9 +229,9 @@ public sealed class Chip8
     /// </remarks>
     private void Op_3XNN(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
+        var vx = (byte)((instruction >> 8) & 0x0F);
         var nn = (byte)(instruction & 0x00FF);
-        if (_registers[x] == nn)
+        if (_registers[vx] == nn)
             _programCounter += 2;
     }
     
@@ -243,9 +243,9 @@ public sealed class Chip8
     /// </remarks>
     private void Op_4XNN(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
+        var vx = (byte)((instruction >> 8) & 0x0F);
         var nn = (byte)(instruction & 0x00FF);
-        if (_registers[x] != nn)
+        if (_registers[vx] != nn)
             _programCounter += 2;
     }
     
@@ -257,9 +257,9 @@ public sealed class Chip8
     /// </remarks>
     private void Op_5XY0(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        if (_registers[x] == _registers[y])
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        if (_registers[vx] == _registers[vy])
             _programCounter += 2;
     }
     
@@ -268,9 +268,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_6XNN(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
+        var vx = (byte)((instruction >> 8) & 0x0F);
         var nn = (byte)(instruction & 0x00FF);
-        _registers[x] = nn;
+        _registers[vx] = nn;
     }
     
     /// <summary>
@@ -278,9 +278,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_7XNN(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
+        var vx = (byte)((instruction >> 8) & 0x0F);
         var nn = (byte)(instruction & 0x00FF);
-        _registers[x] += nn;
+        _registers[vx] += nn;
     }
 
     /// <summary>
@@ -288,9 +288,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY0(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        _registers[x] = _registers[y];
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        _registers[vx] = _registers[vy];
     }
     
     /// <summary>
@@ -298,9 +298,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY1(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        _registers[x] |= _registers[y];
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        _registers[vx] |= _registers[vy];
     }
     
     /// <summary>
@@ -308,9 +308,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY2(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        _registers[x] &= _registers[y];
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        _registers[vx] &= _registers[vy];
     }
     
     /// <summary>
@@ -318,9 +318,9 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY3(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        _registers[x] ^= _registers[y];
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        _registers[vx] ^= _registers[vy];
     }
 
     /// <summary>
@@ -328,11 +328,11 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY4(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        var result = _registers[x] + _registers[y];
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        var result = _registers[vx] + _registers[vy];
         _registers[0xF] = result > 255 ? (byte)1 : (byte)0;
-        _registers[x] = (byte)result;
+        _registers[vx] = (byte)result;
     }
 
     /// <summary>
@@ -340,11 +340,11 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY5(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        var result = _registers[x] - _registers[y];
-        _registers[0xF] = _registers[x] > _registers[y] ? (byte)1 : (byte)0;
-        _registers[x] = (byte)result;
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        var result = _registers[vx] - _registers[vy];
+        _registers[0xF] = _registers[vx] > _registers[vy] ? (byte)1 : (byte)0;
+        _registers[vx] = (byte)result;
     }
     
     /// <summary>
@@ -364,11 +364,11 @@ public sealed class Chip8
     /// </summary>
     private void Op_8XY7(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        var result = _registers[y] - _registers[x];
-        _registers[0xF] = _registers[y] > _registers[x] ? (byte)1 : (byte)0;
-        _registers[x] = (byte)result;
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        var result = _registers[vy] - _registers[vx];
+        _registers[0xF] = _registers[vy] > _registers[vx] ? (byte)1 : (byte)0;
+        _registers[vx] = (byte)result;
     }
     
     /// <summary>
@@ -391,9 +391,9 @@ public sealed class Chip8
     /// </remarks>
     private void Op_9XY0(ushort instruction)
     {
-        var x = (byte)((instruction >> 8) & 0x0F);
-        var y = (byte)((instruction >> 4) & 0x0F);
-        if (_registers[x] != _registers[y])
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        var vy = (byte)((instruction >> 4) & 0x0F);
+        if (_registers[vx] != _registers[vy])
             _programCounter += 2;
     }
 
@@ -439,7 +439,7 @@ public sealed class Chip8
     /// <summary>
     /// SKIP;Vx EQ KEY
     /// </summary>
-    public void Op_EX9E(ushort instruction)
+    private void Op_EX9E(ushort instruction)
     {
         var vx = (byte)((instruction >> 8) & 0x0F);
         var x = _registers[vx];
@@ -451,7 +451,7 @@ public sealed class Chip8
     /// <summary>
     /// SKIP;Vx NE KEY
     /// </summary>
-    public void Op_EXA1(ushort instruction)
+    private void Op_EXA1(ushort instruction)
     {
         var vx = (byte)((instruction >> 8) & 0x0F);
         var x = _registers[vx];
@@ -595,7 +595,7 @@ public sealed class Chip8
             {
                 var spritePixel = (byte)(spriteByte & (0x80 >> col));
                 var displayIndex = x + col + DisplayWidth * (y + row);
-
+                
                 if (spritePixel != 0)
                 {
                     if (Display[displayIndex])
