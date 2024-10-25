@@ -1,8 +1,5 @@
-﻿using Raylib_CSharp;
-using Raylib_CSharp.Audio;
-using Raylib_CSharp.Colors;
-using Raylib_CSharp.Rendering;
-using Raylib_CSharp.Windowing;
+﻿using CommandLine;
+using CommandLine.Text;
 
 namespace Chip8Emulator;
 
@@ -10,51 +7,37 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        var chip8 = new Chip8();
-        chip8.LoadRom(@"C:\Users\dmitr\Downloads\test_opcode.ch8");
-
-        var cycleDelay = 16.0 / 1_000;
-        var lastCycleTime = Time.GetTime();
-        
-        AudioDevice.Init();
-        Window.Init(640, 320, "CHIP-8 Emulator");
-        Time.SetTargetFPS(60);
-        
-        var beepSound = Sound.Load("./Resources/500.wav");
-
-        while (!Window.ShouldClose())
+        var parser = new Parser(with =>
         {
-            if (chip8.SoundTimer > 0)
-                beepSound.Play();
-            else
-                beepSound.Pause();
+            with.HelpWriter = null;
+        });
 
-            var currentTime = Time.GetTime();
-            var dt = currentTime - lastCycleTime;
-
-            if (dt > cycleDelay)
-            {
-                lastCycleTime = currentTime;
-
-                chip8.Cycle();
-
-                Graphics.BeginDrawing();
-
-                Graphics.ClearBackground(Color.Black);
-
-                for (var x = 0; x < Chip8.DisplayWidth; x++)
-                for (var y = 0; y < Chip8.DisplayHeight; y++)
-                    if (chip8.Display[x + y * Chip8.DisplayWidth])
-                        Graphics.DrawRectangle(x * 10, y * 10, 10, 10, Color.DarkGreen);
-
-                Graphics.EndDrawing();
-            }
-        }
-
-        Window.Close();
-        AudioDevice.Close();
-        beepSound.Unload();
+        var result = parser.ParseArguments<Options>(args);
+        
+        result.WithParsed(RunWithOptions)
+            .WithNotParsed(_ => DisplayHelp(result));
 
         return 0;
+    }
+
+    private static void DisplayHelp(ParserResult<Options> result)
+    {
+        var helpText = HelpText.AutoBuild(result, h =>
+        {
+            h.Heading = "CHIP-8 Emulator 1.0";
+            h.Copyright = string.Empty;
+            h.AdditionalNewLineAfterOption = true;
+            h.AddPreOptionsLine("Usage: chip8-emulator -r <ROM path> [options]");
+            h.AddPostOptionsLine("Visit https://github.com/DmitryNizhebovsky/Chip8Emulator for more info.");
+            return HelpText.DefaultParsingErrorsHandler(result, h);
+        }, e => e);
+
+        Console.WriteLine(helpText);
+    }
+
+    private static void RunWithOptions(Options opts)
+    {
+        var emulator = new Emulator();
+        emulator.Run(opts);
     }
 }
