@@ -16,6 +16,7 @@ public sealed class Chip8
     private readonly byte[] _memory = new byte[4096];
     private readonly byte[] _registers = new byte[16];
     private readonly Stack<ushort> _stack = new(16);
+    private readonly int _instructionsPerFrame;
 
     private readonly byte[] _fontSet =
     [
@@ -37,8 +38,9 @@ public sealed class Chip8
         0xF0, 0x80, 0xF0, 0x80, 0x80 // F
     ];
 
-    public Chip8()
+    public Chip8(int instructionsPerFrame)
     {
+        _instructionsPerFrame = instructionsPerFrame;
         LoadFont();
     }
 
@@ -66,16 +68,24 @@ public sealed class Chip8
     {
         Array.Copy(_fontSet, 0, _memory, FontSetAddress, _fontSet.Length);
     }
-
+    
     public void Cycle()
     {
-        var firstByte = _memory[_programCounter++];
-        var secondByte = _memory[_programCounter++];
-        var instruction = (ushort)((firstByte << 8) | secondByte);
-
+        for (var i = 0; i < _instructionsPerFrame; i++)
+        {
+            var firstByte = _memory[_programCounter++];
+            var secondByte = _memory[_programCounter++];
+            var instruction = (ushort)((firstByte << 8) | secondByte);
+            
+            Execute(instruction);
+        }
+        
         if (_delayTimer > 0) _delayTimer--;
         if (SoundTimer > 0) SoundTimer--;
-
+    }
+    
+    private void Execute(ushort instruction)
+    {
         var firstNibble =  (byte)((instruction >> 12) & 0x0F);
         var thirdNibble =  (byte)((instruction >> 4)  & 0x0F);
         var fourthNibble = (byte)((instruction >> 0)  & 0x0F);

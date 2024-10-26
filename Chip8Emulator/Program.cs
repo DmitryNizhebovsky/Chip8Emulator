@@ -37,7 +37,7 @@ public static class Program
 
     private static void RunWithOptions(Options opts)
     {
-        var emulator = new Emulator();
-        emulator.Run(opts);
+        var emulator = new Emulator(opts);
+        emulator.Run();
     }
 }

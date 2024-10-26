@@ -10,8 +10,8 @@ public sealed class Options
     [Option('s', "scale", Required = false, Default = 10, HelpText = "Set the scale of each pixel on screen.")]
     public int PixelScale { get; set; }
     
-    [Option('f', "targetFps", Required = false, Default = 60, HelpText = "Set the target frames per second.")]
-    public int TargetFps { get; set; }
+    [Option('i', "instructionsPerFrame", Required = false, Default = 100, HelpText = "Set the number of instructions executed per frame.")]
+    public int InstructionsPerFrame { get; set; }
 
     [Option('v', "verbose", Required = false, Default = false, HelpText = "Enable verbose output.")]
     public bool Verbose { get; set; }

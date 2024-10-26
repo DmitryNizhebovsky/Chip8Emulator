@@ -10,30 +10,38 @@ namespace Chip8Emulator;
 
 public sealed class Emulator
 {
-    private readonly Chip8 _chip8 = new();
+    private readonly Chip8 _chip8;
 
-    public void Run(Options options)
+    private readonly Options _options;
+
+    public Emulator(Options options)
     {
-        var scale = options.PixelScale;
+        _options = options;
+        _chip8 = new(options.InstructionsPerFrame);
+    }
+
+    public void Run()
+    {
+        var scale = _options.PixelScale;
         var windowWidth = Chip8.DisplayWidth * scale;
         var windowHeight = Chip8.DisplayHeight * scale;
         
-        SetTraceLogLevel(options);
+        SetTraceLogLevel(_options);
         
         AudioDevice.Init();
         Window.Init(windowWidth, windowHeight, "CHIP-8 Emulator");
-        Time.SetTargetFPS(options.TargetFps);
+        Time.SetTargetFPS(60);
         
         var beepSound = Sound.Load("./Resources/500.wav");
         
-        _chip8.LoadRom(options.RomPath);
+        _chip8.LoadRom(_options.RomPath);
 
         while (!Window.ShouldClose())
         {
             if (Input.IsKeyPressed(KeyboardKey.Enter))
             {
                 _chip8.Reset();
-                _chip8.LoadRom(options.RomPath);
+                _chip8.LoadRom(_options.RomPath);
             }
 
             if (Input.IsKeyPressed(KeyboardKey.Escape))
