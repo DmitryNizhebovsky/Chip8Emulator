@@ -7,7 +7,7 @@ public sealed class Chip8
     public const ushort DisplayWidth = 64;
     public const ushort DisplayHeight = 32;
 
-    public byte SoundTimer { get; private set; }
+    private byte _soundTimer;
     private byte _delayTimer;
     private ushort _programCounter = StartAddress;
     private ushort _indexRegister;
@@ -50,6 +50,8 @@ public sealed class Chip8
         Array.Copy(romData, 0, _memory, StartAddress, romData.Length);
     }
 
+    public bool IsNeedPlaySound() => _soundTimer > 0;
+
     public void Reset()
     {
         Array.Clear(Display);
@@ -60,7 +62,7 @@ public sealed class Chip8
         _programCounter = StartAddress;
         _indexRegister = 0;
         _delayTimer = 0;
-        SoundTimer = 0;
+        _soundTimer = 0;
         _stack.Clear();
     }
 
@@ -81,7 +83,7 @@ public sealed class Chip8
         }
         
         if (_delayTimer > 0) _delayTimer--;
-        if (SoundTimer > 0) SoundTimer--;
+        if (_soundTimer > 0) _soundTimer--;
     }
     
     private void Execute(ushort instruction)
@@ -536,7 +538,7 @@ public sealed class Chip8
     private void Op_FX18(ushort instruction)
     {
         var vx = (byte)((instruction >> 8) & 0x0F);
-        SoundTimer = _registers[vx];
+        _soundTimer = _registers[vx];
     }
     
     /// <summary>

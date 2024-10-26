@@ -78,7 +78,7 @@ public sealed class Emulator
 
     private void PlaySound(Sound sound)
     {
-        if (_chip8.SoundTimer > 0)
+        if (_chip8.IsNeedPlaySound())
             sound.Play();
         else
             sound.Pause();
