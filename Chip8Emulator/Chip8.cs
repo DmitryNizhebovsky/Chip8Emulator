@@ -534,7 +534,8 @@ public sealed class Chip8
     /// </summary>
     private void Op_FX1E(ushort instruction)
     {
-        throw new NotImplementedException();
+        var vx = (byte)((instruction >> 8) & 0x0F);
+        _indexRegister += _registers[vx];
     }
     
     /// <summary>
