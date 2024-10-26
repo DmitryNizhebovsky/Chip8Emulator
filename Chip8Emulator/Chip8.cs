@@ -488,38 +488,10 @@ public sealed class Chip8
     {
         var vx = (byte)((instruction >> 8) & 0x0F);
 
-        if (Keypad[0])
-            _registers[vx] = 0;
-        else if (Keypad[1])
-            _registers[vx] = 1;
-        else if (Keypad[2])
-            _registers[vx] = 2;
-        else if (Keypad[3])
-            _registers[vx] = 3;
-        else if (Keypad[4])
-            _registers[vx] = 4;
-        else if (Keypad[5])
-            _registers[vx] = 5;
-        else if (Keypad[6])
-            _registers[vx] = 6;
-        else if (Keypad[7])
-            _registers[vx] = 7;
-        else if (Keypad[8])
-            _registers[vx] = 8;
-        else if (Keypad[9])
-            _registers[vx] = 9;
-        else if (Keypad[10])
-            _registers[vx] = 10;
-        else if (Keypad[11])
-            _registers[vx] = 11;
-        else if (Keypad[12])
-            _registers[vx] = 12;
-        else if (Keypad[13])
-            _registers[vx] = 13;
-        else if (Keypad[14])
-            _registers[vx] = 14;
-        else if (Keypad[15])
-            _registers[vx] = 15;
+        var activeKeyIndex = Array.FindIndex(Keypad, key => key);
+
+        if (activeKeyIndex != -1)
+            _registers[vx] = (byte)activeKeyIndex;
         else _programCounter -= 2;
     }
     
